@@ -1,41 +1,48 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.deployment.name }}
-  namespace: {{ .Values.namespace }}
-  annotations:
-    reloader.stakater.com/auto: "true"
+  name: {{ include "backend-app.name" . }}
+  namespace: {{ .Values.namespaceOverride | default .Release.Namespace }}
   labels:
-    app: bahan-ajar
-    logging: "loki"
+    {{- include "backend-app.labels" . | nindent 4 }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  annotations:
+    {{- range $key, $value := .Values.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: bahan-ajar
+      app.kubernetes.io/name: {{ include "backend-app.name" . | quote }}
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
   template:
     metadata:
       labels:
-        app: bahan-ajar
-        logging: "loki"
+        {{- include "backend-app.labels" . | nindent 8 }}
+        {{- range $key, $value := .Values.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
       annotations:
-        loki.io/scrape: "true"
-        loki.io/path: "/var/log/pods/*"
-        loki.io/job: "bahan-ajar"
+        {{- range $key, $value := .Values.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
     spec:
       containers:
-        - name: bahan-ajar
+        - name: {{ include "backend-app.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.port }}
+            - containerPort: {{ .Values.service.port }}
           envFrom:
             - configMapRef:
-                name: {{ .Values.configMapName }}
+                name: {{ .Values.envFrom.configMapRef }}
           resources:
             requests:
-              cpu: "{{ .Values.resources.requests.cpu }}"
-              memory: "{{ .Values.resources.requests.memory }}"
+              cpu: {{ .Values.resources.requests.cpu | quote }}
+              memory: {{ .Values.resources.requests.memory | quote }}
             limits:
-              cpu: "{{ .Values.resources.limits.cpu }}"
-              memory: "{{ .Values.resources.limits.memory }}"
+              cpu: {{ .Values.resources.limits.cpu | quote }}
+              memory: {{ .Values.resources.limits.memory | quote }}
