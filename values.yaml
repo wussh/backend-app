@@ -1,0 +1,23 @@
+replicaCount: 1
+
+namespace: banjar-unhan
+
+image:
+  repository: 10.70.0.28:4321/banjar-unhan/bahan-ajar-cms
+  tag: latest
+  pullPolicy: Always
+
+deployment:
+  name: bahan-ajar-deployment
+
+configMapName: bahan-ajar-config
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "300Mi"
+  limits:
+    cpu: "400m"
+    memory: "600Mi"
+
+port: 1339

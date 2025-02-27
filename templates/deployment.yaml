@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app: bahan-ajar
+    logging: "loki"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: bahan-ajar
+  template:
+    metadata:
+      labels:
+        app: bahan-ajar
+        logging: "loki"
+      annotations:
+        loki.io/scrape: "true"
+        loki.io/path: "/var/log/pods/*"
+        loki.io/job: "bahan-ajar"
+    spec:
+      containers:
+        - name: bahan-ajar
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMapName }}
+          resources:
+            requests:
+              cpu: "{{ .Values.resources.requests.cpu }}"
+              memory: "{{ .Values.resources.requests.memory }}"
+            limits:
+              cpu: "{{ .Values.resources.limits.cpu }}"
+              memory: "{{ .Values.resources.limits.memory }}"
