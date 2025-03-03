@@ -22,9 +22,9 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "backend-app.fullname" $root }}-service
+                name: {{ include "backend-app.fullname" $. }}-service
                 port:
-                  number: {{ $root.Values.service.port }}
+                  number: {{ $.Values.service.port }}
     {{- end }}
   {{- if .Values.ingress.tls }}
   tls:
