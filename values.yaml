@@ -1,32 +1,49 @@
+# Default image and tag
+image:
+  repository: 10.70.0.28:4321/banjar-unhan/bahan-ajar-cms
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Replica settings
 replicaCount: 1
 
-image:
-  repository: "10.70.0.28:4321/banjar-unhan/bahan-ajar-cms"
-  tag: "latest"
-  pullPolicy: "Always"
-
-deployment:
-  annotations:
-    reloader.stakater.com/auto: "true"
-
-# Example labeling values (each has a fallback in _helpers.tpl)
-labels:
-  app.kubernetes.io/name: "backend-service"
-  app.kubernetes.io/instance: "backend-v1"
-  app.kubernetes.io/component: "api"
-  app.kubernetes.io/part-of: "ecommerce-platform"
-  app.kubernetes.io/managed-by: "helm"
-  environment: "staging"
-  team: "payments"
-  version: "v1.2.3"
-
+# Resources
 resources:
   requests:
-    cpu: "200m"
-    memory: "300Mi"
+    cpu: 200m
+    memory: 300Mi
   limits:
-    cpu: "400m"
-    memory: "600Mi"
+    cpu: 400m
+    memory: 600Mi
 
-# Port can also be parameterized if desired:
+# Common labels you might override
+labels:
+  service: "bahan-ajar-cms"
+  partOf: "banjar-unhan"
+  environment: "staging"
+  team: "backend"
+  version: "v1.0.0"
+
+# Common annotations (e.g. for auto-reload or other operators)
+annotations:
+  reloader.stakater.com/auto: "true"
+
+# Exposed container port
 containerPort: 1339
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 1339
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    - host: bahan.ajar.cms.10.70.0.45.nip.io
+      path: /
+  tls: []

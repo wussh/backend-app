@@ -1,35 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "backend-app.fullname" . }}
-  namespace: {{ .Release.Namespace }}
-  annotations:
-    {{- toYaml .Values.deployment.annotations | nindent 4 }}
+  name: {{ include "backend-app.fullname" . }}-deployment
   labels:
     {{- include "backend-app.labels" . | nindent 4 }}
+  annotations:
+    {{- range $key, $value := .Values.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "backend-app.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "backend-app.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        {{- include "backend-app.selectorLabels" . | nindent 8 }}
+        {{- include "backend-app.labels" . | nindent 8 }}
     spec:
       containers:
-        - name: {{ include "backend-app.name" . }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - containerPort: {{ .Values.containerPort }}
-          envFrom:
-            - configMapRef:
-                name: {{ include "backend-app.name" . }}-config
-          resources:
-            requests:
-              cpu: {{ .Values.resources.requests.cpu }}
-              memory: {{ .Values.resources.requests.memory }}
-            limits:
-              cpu: {{ .Values.resources.limits.cpu }}
-              memory: {{ .Values.resources.limits.memory }}
+      - name: {{ include "backend-app.name" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.containerPort }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "backend-app.fullname" . }}-config
