@@ -1,37 +1,35 @@
+{{- if .Values.deployment.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "backend-app.fullname" . }}-deployment
+  name: {{ include "backend-app.fullname" . }}
   labels:
     {{- include "backend-app.labels" . | nindent 4 }}
   annotations:
-    {{- range $key, $value := .Values.annotations }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
+    reloader.stakater.com/auto: "true"
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.deployment.replicas }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "backend-app.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "backend-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "backend-app.labels" . | nindent 8 }}
+        {{- include "backend-app.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-      - name: {{ include "backend-app.name" . }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
-          - containerPort: {{ .Values.containerPort }}
-        resources:
-          requests:
-            cpu: {{ .Values.resources.requests.cpu }}
-            memory: {{ .Values.resources.requests.memory }}
-          limits:
-            cpu: {{ .Values.resources.limits.cpu }}
-            memory: {{ .Values.resources.limits.memory }}
-        envFrom:
-          - configMapRef:
-              name: {{ include "backend-app.fullname" . }}-config
+        - name: {{ include "backend-app.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          envFrom:
+            {{- toYaml .Values.envFrom | nindent 10 }}
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+{{- end }}

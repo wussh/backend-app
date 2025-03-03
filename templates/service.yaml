@@ -1,16 +1,16 @@
+{{- if .Values.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "backend-app.fullname" . }}-service
+  name: {{ include "backend-app.fullname" . }}
   labels:
     {{- include "backend-app.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
-      protocol: TCP
-      name: http
   selector:
-    app.kubernetes.io/name: {{ include "backend-app.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- include "backend-app.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+{{- end }}

@@ -1,37 +1,35 @@
-{{- if .Values.ingress.enabled }}
+{{- if and .Values.ingress.enabled (not (empty .Values.ingress.hosts)) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "backend-app.fullname" . }}-ingress
+  name: {{ include "backend-app.fullname" . }}
   labels:
     {{- include "backend-app.labels" . | nindent 4 }}
+  {{- if .Values.ingress.annotations }}
   annotations:
-    {{- range $key, $value := .Values.ingress.annotations }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+  {{- end }}
 spec:
   {{- if .Values.ingress.className }}
-  ingressClassName: {{ .Values.ingress.className | quote }}
+  ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
   rules:
     {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .host }}
       http:
         paths:
+          {{- range .paths }}
           - path: {{ .path }}
-            pathType: Prefix
+            pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ include "backend-app.fullname" $. }}-service
+                name: {{ include "backend-app.fullname" $ }}
                 port:
                   number: {{ $.Values.service.port }}
+          {{- end }}
     {{- end }}
-  {{- if .Values.ingress.tls }}
+  {{- if not (empty .Values.ingress.tls) }}
   tls:
-    {{- range .Values.ingress.tls }}
-    - hosts:
-        - {{ .host | quote }}
-      secretName: {{ .secretName | quote }}
-    {{- end }}
+    {{- toYaml .Values.ingress.tls | nindent 4 }}
   {{- end }}
 {{- end }}

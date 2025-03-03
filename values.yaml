@@ -1,49 +1,53 @@
-# Default image and tag
+# Default labels and their values
+labels:
+  name: backend-service
+  instance: backend-v1
+  component: api
+  partOf: ecommerce-platform
+  environment: staging
+  team: payments
+  version: v1.2.3
+  # "managed-by" is set to "helm" by default in the templates/_helpers.tpl
+
 image:
   repository: 10.70.0.28:4321/banjar-unhan/bahan-ajar-cms
-  tag: "latest"
-  pullPolicy: IfNotPresent
+  tag: latest
+  pullPolicy: Always
 
-# Replica settings
-replicaCount: 1
+deployment:
+  enabled: true
+  replicas: 1
 
-# Resources
-resources:
-  requests:
-    cpu: 200m
-    memory: 300Mi
-  limits:
-    cpu: 400m
-    memory: 600Mi
-
-# Common labels you might override
-labels:
-  service: "bahan-ajar-cms"
-  partOf: "banjar-unhan"
-  environment: "staging"
-  team: "backend"
-  version: "v1.0.0"
-
-# Common annotations (e.g. for auto-reload or other operators)
-annotations:
-  reloader.stakater.com/auto: "true"
-
-# Exposed container port
-containerPort: 1339
-
-# Service configuration
 service:
+  enabled: true
   type: ClusterIP
   port: 80
   targetPort: 1339
 
-# Ingress configuration
 ingress:
   enabled: true
-  className: "traefik"
+  className: ""
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
     - host: bahan.ajar.cms.10.70.0.45.nip.io
-      path: /
+      paths:
+        - path: /
+          pathType: Prefix
   tls: []
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - example.com
+
+resources:
+  limits:
+    cpu: 400m
+    memory: 600Mi
+  requests:
+    cpu: 200m
+    memory: 300Mi
+
+# Example: environment variables from config map or secrets
+envFrom:
+  - configMapRef:
+      name: bahan-ajar-config
