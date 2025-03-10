@@ -9,6 +9,11 @@ metadata:
     reloader.stakater.com/auto: "true"
 spec:
   replicas: {{ .Values.deployment.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
   selector:
     matchLabels:
       {{- include "backend-app.selectorLabels" . | nindent 6 }}
