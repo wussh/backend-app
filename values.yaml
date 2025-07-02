@@ -13,6 +13,7 @@ image:
   repository: 10.70.0.28:4321/banjar-unhan/bahan-ajar-cms
   tag: latest
   pullPolicy: Always
+  imagePullSecrets: [] # Example: ["my-registry-secret"]
 
 deployment:
   enabled: true
@@ -26,7 +27,7 @@ service:
 
 ingress:
   enabled: true
-  className: ""
+  className: ""ss
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:

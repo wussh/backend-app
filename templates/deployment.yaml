@@ -22,6 +22,10 @@ spec:
       labels:
         {{- include "backend-app.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.image.imagePullSecrets | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ include "backend-app.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
