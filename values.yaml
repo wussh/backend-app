@@ -13,7 +13,8 @@ image:
   repository: 10.70.0.28:4321/banjar-unhan/bahan-ajar-cms
   tag: latest
   pullPolicy: Always
-  imagePullSecrets: [] # Example: ["my-registry-secret"]
+  imagePullSecrets:
+    - name: regcred
 
 deployment:
   enabled: true
