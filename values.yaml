@@ -28,7 +28,6 @@ service:
 
 ingress:
   enabled: true
-  className: ""ss
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web
   hosts:
