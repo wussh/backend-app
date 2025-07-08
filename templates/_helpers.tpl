@@ -26,3 +26,7 @@ app.kubernetes.io/version-label: {{ .Values.labels.version | default "v1.2.3" | 
 app.kubernetes.io/name: {{ .Chart.Name | quote }}
 app.kubernetes.io/instance: {{ .Release.Name | quote }}
 {{- end }}
+
+{{- define "hpaFullname" -}}
+{{- printf "%s-hpa" (include "fullname" .) -}}
+{{- end -}}

@@ -50,6 +50,10 @@ The following table lists the configurable parameters of the chart and their def
 | `ingress.hosts`          | Ingress host(s)                             | `bahan.ajar.cms.10.70.0.45.nip.io` |
 | `resources`              | Resource requests and limits                | `{cpu: 200m/400m, memory: 300Mi/600Mi}` |
 | `envFrom`                | Environment variables from configMap/secret | See `values.yaml`              |
+| `hpa.enabled`            | Enable Horizontal Pod Autoscaler            | `false`                        |
+| `hpa.minReplicas`        | Minimum number of replicas for HPA          | `1`                            |
+| `hpa.maxReplicas`        | Maximum number of replicas for HPA          | `5`                            |
+| `hpa.targetCPUUtilizationPercentage` | Target CPU utilization for HPA         | `80`                           |
 
 ## Example
 
@@ -78,4 +82,9 @@ resources:
   requests:
     cpu: 250m
     memory: 512Mi
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 75
 ```
