@@ -33,7 +33,7 @@ spec:
           ports:
             - containerPort: {{ .Values.service.targetPort }}
           envFrom:
-            {{- toYaml .Values.envFrom | nindent 10 }}
+            {{- toYaml .Values.envFrom | nindent 14 }}
           resources:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}
@@ -41,4 +41,26 @@ spec:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}
               memory: {{ .Values.resources.requests.memory }}
+            {{- if .Values.livenessProbe.enabled }}
+            livenessProbe:
+              httpGet:
+                path: {{ .Values.livenessProbe.path }}
+                port: {{ .Values.livenessProbe.port }}
+              initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+              periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+              timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | default 1 }}
+              failureThreshold: {{ .Values.livenessProbe.failureThreshold | default 3 }}
+              successThreshold: {{ .Values.livenessProbe.successThreshold | default 1 }}
+            {{- end }}
+            {{- if .Values.readinessProbe.enabled }}
+            readinessProbe:
+              httpGet:
+                path: {{ .Values.readinessProbe.path }}
+                port: {{ .Values.readinessProbe.port }}
+              initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+              periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+              timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | default 1 }}
+              failureThreshold: {{ .Values.readinessProbe.failureThreshold | default 3 }}
+              successThreshold: {{ .Values.readinessProbe.successThreshold | default 1 }}
+            {{- end }}
 {{- end }}

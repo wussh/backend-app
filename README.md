@@ -54,6 +54,16 @@ The following table lists the configurable parameters of the chart and their def
 | `hpa.minReplicas`        | Minimum number of replicas for HPA          | `1`                            |
 | `hpa.maxReplicas`        | Maximum number of replicas for HPA          | `5`                            |
 | `hpa.targetCPUUtilizationPercentage` | Target CPU utilization for HPA         | `80`                           |
+| `livenessProbe.enabled`    | Enable liveness probe                    | `true`                         |
+| `livenessProbe.path`       | Liveness probe HTTP path                 | `/healthz`                     |
+| `livenessProbe.port`       | Liveness probe port                      | `1339`                         |
+| `livenessProbe.initialDelaySeconds` | Initial delay for liveness probe      | `10`                           |
+| `livenessProbe.periodSeconds` | Period for liveness probe              | `10`                           |
+| `readinessProbe.enabled`   | Enable readiness probe                   | `true`                         |
+| `readinessProbe.path`      | Readiness probe HTTP path                | `/readyz`                      |
+| `readinessProbe.port`      | Readiness probe port                     | `1339`                         |
+| `readinessProbe.initialDelaySeconds` | Initial delay for readiness probe     | `5`                            |
+| `readinessProbe.periodSeconds` | Period for readiness probe             | `5`                            |
 
 ## Example
 
@@ -87,4 +97,16 @@ hpa:
   minReplicas: 2
   maxReplicas: 10
   targetCPUUtilizationPercentage: 75
+livenessProbe:
+  enabled: true
+  path: /healthz
+  port: 1339
+  initialDelaySeconds: 10
+  periodSeconds: 10
+readinessProbe:
+  enabled: true
+  path: /readyz
+  port: 1339
+  initialDelaySeconds: 5
+  periodSeconds: 5
 ```
