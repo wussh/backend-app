@@ -1,7 +1,5 @@
 # Default labels and their values
 labels:
-  name: backend-service
-  instance: backend-v1
   component: api
   partOf: ecommerce-platform
   environment: staging

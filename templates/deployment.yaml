@@ -2,9 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "backend-app.fullname" . }}
+  name: {{ include "fullname" . }}
   labels:
-    {{- include "backend-app.labels" . | nindent 4 }}
+    {{- include "labels" . | nindent 4 }}
   annotations:
     reloader.stakater.com/auto: "true"
 spec:
@@ -16,18 +16,18 @@ spec:
       maxSurge: 25%
   selector:
     matchLabels:
-      {{- include "backend-app.selectorLabels" . | nindent 6 }}
+      {{- include "selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "backend-app.selectorLabels" . | nindent 8 }}
+        {{- include "selectorLabels" . | nindent 8 }}
     spec:
       {{- if .Values.image.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml .Values.image.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ include "backend-app.name" . }}
+        - name: {{ include "name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
